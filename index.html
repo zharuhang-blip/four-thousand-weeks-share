@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>四千周 · 15分钟读书分享</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f4f2ec;
+      --paper: #fffcf7;
+      --ink: #141820;
+      --muted: #5c6470;
+      --line: #d8d3c8;
+      --yellow: #f4d35e;
+      --yellow-deep: #e6b800;
+      --win-blue: #0b2a6b;
+      --win-gray: #c8c8c8;
+      --mint: #8ef0b8;
+      --pink: #f7a8c8;
+      --soft-blue: #6f9fd4;
+      --navy: #1c2740;
+      --shadow: 4px 4px 0 rgba(20, 24, 32, 0.12);
+      --max: 760px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        linear-gradient(180deg, rgba(111,159,212,0.08), transparent 28%),
+        radial-gradient(circle at 12% 8%, rgba(244,211,94,0.18), transparent 26%),
+        radial-gradient(circle at 88% 12%, rgba(142,240,184,0.16), transparent 24%),
+        var(--bg);
+      font-family: "Noto Sans SC", "PingFang SC", "Hiragino Sans GB", sans-serif;
+      font-weight: 400;
+      line-height: 1.75;
+      letter-spacing: 0.01em;
+    }
+
+    .cursor-deco {
+      position: fixed;
+      width: 18px;
+      height: 26px;
+      pointer-events: none;
+      opacity: 0.14;
+      z-index: 0;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='26' viewBox='0 0 18 26'%3E%3Cpath d='M1 1 L1 18 L5.5 14.5 L8.5 23 L11 21.5 L8 13 L14 13 Z' fill='white' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") no-repeat center/contain;
+    }
+    .cursor-deco.a { top: 18%; left: 3%; transform: rotate(-8deg); }
+    .cursor-deco.b { top: 42%; right: 4%; transform: rotate(12deg); }
+    .cursor-deco.c { bottom: 22%; left: 5%; transform: rotate(4deg); }
+
+    .page {
+      position: relative;
+      z-index: 1;
+      width: min(var(--max), calc(100% - 48px));
+      margin: 0 auto;
+      padding: 64px 0 120px;
+    }
+
+    .mono {
+      font-family: "IBM Plex Mono", ui-monospace, monospace;
+      letter-spacing: 0.02em;
+    }
+
+    .meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      align-items: center;
+      margin-bottom: 36px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border: 1.5px solid var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      font-size: 12px;
+    }
+    .chip.yellow { background: var(--yellow); }
+    .chip.mint { background: var(--mint); }
+    .chip.pink { background: var(--pink); }
+    .chip.black {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+
+    .folder {
+      width: 16px;
+      height: 12px;
+      border: 1.5px solid #111;
+      background: var(--yellow);
+      position: relative;
+      display: inline-block;
+      box-shadow: 1px 1px 0 #bbb;
+      flex-shrink: 0;
+    }
+    .folder::before {
+      content: "";
+      position: absolute;
+      top: -4px;
+      left: -1.5px;
+      width: 7px;
+      height: 4px;
+      border: 1.5px solid #111;
+      border-bottom: none;
+      background: var(--yellow-deep);
+    }
+    .folder.black { background: #111; }
+    .folder.black::before { background: #333; border-color: #111; }
+
+    .hero {
+      margin-bottom: 72px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--line);
+    }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.1rem);
+      font-weight: 700;
+      line-height: 1.2;
+      margin: 0 0 18px;
+      letter-spacing: -0.02em;
+      max-width: 14em;
+    }
+    .hero .sub {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 34em;
+      margin: 0 0 28px;
+      font-weight: 300;
+    }
+    .hero .mark {
+      display: inline;
+      background: var(--mint);
+      padding: 0 0.28em;
+      box-decoration-break: clone;
+    }
+    .hero-meta {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 24px;
+    }
+
+    .winbox {
+      background: var(--win-gray);
+      border: 2px solid;
+      border-color: #fff #555 #555 #fff;
+      box-shadow: 6px 6px 0 rgba(0,0,0,0.12);
+      margin: 28px 0 0;
+      max-width: 520px;
+    }
+    .winbox-title {
+      background: linear-gradient(90deg, var(--win-blue), #2a4ea0);
+      color: #fff;
+      padding: 5px 8px;
+      font-size: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .winbox-btns span {
+      display: inline-block;
+      width: 14px;
+      height: 12px;
+      background: var(--win-gray);
+      border: 1px solid;
+      border-color: #fff #333 #333 #fff;
+      color: #111;
+      font-size: 9px;
+      text-align: center;
+      line-height: 10px;
+      margin-left: 3px;
+    }
+    .winbox-body {
+      padding: 18px 16px 14px;
+      background: #dcdcdc;
+    }
+    .winbox-body p {
+      margin: 0 0 14px;
+      font-size: 15px;
+      line-height: 1.55;
+    }
+    .winbox-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .winbtn {
+      min-width: 72px;
+      padding: 3px 10px;
+      background: var(--win-gray);
+      border: 2px solid;
+      border-color: #fff #444 #444 #fff;
+      font: inherit;
+      font-size: 13px;
+      cursor: default;
+    }
+
+    section { margin: 72px 0; }
+    .sec-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+      font-size: 12px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+    .sec-label::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+    h2 {
+      font-size: clamp(1.55rem, 3vw, 2rem);
+      line-height: 1.25;
+      margin: 0 0 20px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+    h3 {
+      font-size: 1.2rem;
+      margin: 0 0 10px;
+      font-weight: 700;
+    }
+    p { margin: 0 0 1em; }
+    .lead {
+      font-size: 1.08rem;
+      max-width: 38em;
+      color: #222;
+    }
+    .hl-pink { background: var(--pink); padding: 0 0.25em; }
+    .hl-mint { background: var(--mint); padding: 0 0.25em; }
+    .hl-yellow { background: var(--yellow); padding: 0 0.25em; }
+    .hl-gray { background: #ddd; padding: 0 0.25em; }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 32px 0 8px;
+    }
+    .toc a {
+      text-decoration: none;
+      color: inherit;
+      border: 1.5px solid var(--ink);
+      background: var(--paper);
+      padding: 14px 12px;
+      min-height: 84px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+      transition: transform .15s ease, background .15s ease;
+    }
+    .toc a:hover {
+      transform: translate(-2px, -2px);
+      background: #fff;
+    }
+    .toc .n {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .toc .t {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.35;
+    }
+    .toc a:nth-child(3n+1) { background: #fff8dc; }
+    .toc a:nth-child(3n+2) { background: #eefaf3; }
+    .toc a:nth-child(3n) { background: #fdeef4; }
+
+    .chapter {
+      margin: 56px 0;
+      padding: 36px 0 8px;
+      border-top: 1px dashed var(--line);
+    }
+    .chapter-head {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 16px;
+      align-items: start;
+      margin-bottom: 22px;
+    }
+    .ch-num {
+      width: 56px;
+      height: 56px;
+      border: 2px solid var(--ink);
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      font-size: 1.25rem;
+      background: var(--yellow);
+      box-shadow: var(--shadow);
+    }
+    .chapter:nth-child(3n) .ch-num { background: var(--mint); }
+    .chapter:nth-child(3n+1) .ch-num { background: var(--pink); }
+    .chapter:nth-child(3n+2) .ch-num { background: var(--yellow); }
+
+    .points {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 22px;
+    }
+    .points li {
+      position: relative;
+      padding: 0 0 14px 28px;
+      max-width: 40em;
+    }
+    .points li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 6px;
+      width: 14px;
+      height: 20px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='20' viewBox='0 0 18 26'%3E%3Cpath d='M1 1 L1 18 L5.5 14.5 L8.5 23 L11 21.5 L8 13 L14 13 Z' fill='white' stroke='%23141820' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat center/contain;
+    }
+
+    .quote {
+      margin: 8px 0 24px;
+      padding: 18px 20px;
+      border-left: 4px solid var(--ink);
+      background: rgba(255,255,255,0.65);
+      max-width: 38em;
+    }
+    .quote p {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+    .quote footer {
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .orig-quotes {
+      margin: 0 0 22px;
+      padding: 16px 18px;
+      border: 1.5px dashed var(--ink);
+      background: rgba(244, 211, 94, 0.12);
+      max-width: 40em;
+    }
+    .orig-quotes .label {
+      display: inline-block;
+      margin-bottom: 10px;
+      padding: 2px 8px;
+      border: 1px solid var(--ink);
+      background: var(--yellow);
+      font-size: 11px;
+    }
+    .orig-quotes blockquote {
+      margin: 0 0 12px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+    }
+    .orig-quotes blockquote:last-child { margin-bottom: 0; }
+    .orig-quotes blockquote p {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.7;
+      color: var(--ink);
+    }
+
+    .takeaway {
+      display: inline-block;
+      margin-top: 4px;
+      padding: 10px 14px;
+      border: 1.5px solid var(--ink);
+      background: #111;
+      color: #fff;
+      font-size: 14px;
+      max-width: 40em;
+    }
+
+    .reflection {
+      margin-top: 80px;
+      padding: 40px 28px;
+      background: var(--navy);
+      color: #f4f2ec;
+      box-shadow: 10px 10px 0 rgba(20,24,32,0.18);
+    }
+    .reflection h2 { color: #fff; }
+    .reflection .sec-label { color: #aab3c2; }
+    .reflection .sec-label::after { background: rgba(255,255,255,0.18); }
+    .reflection p { color: #e6e2d8; max-width: 40em; }
+    .reflection .hl-mint,
+    .reflection .hl-pink,
+    .reflection .hl-yellow {
+      color: #111;
+    }
+    .reflection .quote {
+      background: rgba(255,255,255,0.06);
+      border-left-color: var(--yellow);
+      color: #fff;
+    }
+    .reflection .quote p { color: #fff; }
+    .reflection .quote footer { color: #aab3c2; }
+
+    .close-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 28px 0;
+    }
+    .close-card {
+      border: 1.5px solid rgba(255,255,255,0.25);
+      padding: 18px 16px;
+      background: rgba(255,255,255,0.04);
+    }
+    .close-card h4 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      color: var(--mint);
+    }
+    .close-card p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .footer {
+      margin-top: 72px;
+      padding-top: 24px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .mindmap {
+      margin: 48px 0 8px;
+      padding: 28px 24px 32px;
+      border: 2px solid var(--ink);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .mindmap .map-core {
+      display: inline-block;
+      margin: 0 0 20px;
+      padding: 12px 18px;
+      background: var(--yellow);
+      border: 2px solid var(--ink);
+      font-weight: 700;
+      font-size: 1.05rem;
+      box-shadow: var(--shadow);
+    }
+    .mindmap .map-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .mindmap .map-node {
+      padding: 14px 14px 16px;
+      border: 1.5px solid var(--ink);
+      background: #fff;
+      min-height: 100%;
+    }
+    .mindmap .map-node:nth-child(3n+1) { background: #fff8e0; }
+    .mindmap .map-node:nth-child(3n+2) { background: #eefaf3; }
+    .mindmap .map-node:nth-child(3n) { background: #fdeef4; }
+    .mindmap .map-node h4 {
+      margin: 0 0 8px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .mindmap .map-node p {
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+    .mindmap .map-arrow {
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+      margin: 4px 0 14px;
+    }
+    .mindmap .map-one-liner {
+      margin: 18px 0 0;
+      padding: 12px 14px;
+      border-left: 4px solid var(--ink);
+      background: rgba(111,159,212,0.12);
+      font-size: 14px;
+      max-width: 42em;
+    }
+
+    .nav-float {
+      position: sticky;
+      top: 0;
+      z-index: 5;
+      backdrop-filter: blur(8px);
+      background: rgba(244,242,236,0.86);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      margin: -64px -24px 40px;
+      padding: 12px 24px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+    }
+    .nav-float a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      color: var(--ink);
+      font-size: 12px;
+      padding: 6px 10px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+    }
+    .nav-float a:hover { border-color: var(--ink); }
+
+    @media (max-width: 720px) {
+      .page { width: calc(100% - 32px); padding-top: 40px; }
+      .toc { grid-template-columns: 1fr 1fr; }
+      .close-grid { grid-template-columns: 1fr; }
+      .mindmap .map-row { grid-template-columns: 1fr; }
+      .nav-float { margin-left: -16px; margin-right: -16px; }
+      .reflection { padding: 28px 18px; }
+      .cursor-deco { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="cursor-deco a" aria-hidden="true"></div>
+  <div class="cursor-deco b" aria-hidden="true"></div>
+  <div class="cursor-deco c" aria-hidden="true"></div>
+
+  <div class="page">
+    <nav class="nav-float mono" aria-label="章节导航">
+      <a href="#total-open">总起</a>
+      <a href="#mindmap">1分钟导图</a>
+      <a href="#ch1">01</a><a href="#ch2">02</a><a href="#ch3">03</a>
+      <a href="#ch4">04</a><a href="#ch5">05</a><a href="#ch6">06</a>
+      <a href="#ch7">07</a><a href="#ch8">08</a><a href="#ch9">09</a>
+      <a href="#total-close">总收 · 2026</a>
+    </nav>
+
+    <header class="hero" id="total-open">
+      <div class="meta-bar">
+        <span class="chip yellow"><span class="folder"></span><span class="mono">folder · book share</span></span>
+        <span class="chip mint mono">≈ 15 min</span>
+        <span class="chip pink mono">总分总</span>
+        <span class="chip black"><span class="folder black"></span><span class="mono">important</span></span>
+        <a class="chip mono" href="https://zharuhang-blip.github.io/four-thousand-weeks-share/" style="text-decoration:none;color:inherit;">online · open</a>
+        <a class="chip mono" href="https://github.com/zharuhang-blip/four-thousand-weeks-share" style="text-decoration:none;color:inherit;">github · source</a>
+      </div>
+
+      <div class="eyebrow mono">
+        <span class="folder"></span>
+        READING NOTE / 2026
+      </div>
+
+      <h1>四千周<br /><span style="font-weight:300;color:var(--muted);font-size:0.55em;">Four Thousand Weeks</span></h1>
+      <p class="sub">
+        奥利弗·伯克曼（Oliver Burkeman）著 · 戴胜蓝 译<br />
+        一场关于<span class="mark">有限人生、效率陷阱与创造性忽略</span>的 15 分钟读书分享
+      </p>
+
+      <div class="winbox" role="note">
+        <div class="winbox-title mono">
+          <span>Mortality reminder</span>
+          <div class="winbox-btns" aria-hidden="true"><span>_</span><span>□</span><span>×</span></div>
+        </div>
+        <div class="winbox-body">
+          <p><strong>Warning!</strong> Average lifespan ≈ 4000 weeks —<br />你即将看见：时间管理真正该管的，不是多做，而是学会不做什么。</p>
+          <div class="winbox-actions">
+            <button class="winbtn" type="button">Cancel</button>
+            <button class="winbtn" type="button">OK</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-meta mono">
+        <div>作者：前《卫报》专栏作家 / 长期写生产力与焦虑</div>
+        <div>类型：反效率鸡汤 · 有限性哲学 · 日常时间伦理</div>
+      </div>
+    </header>
+
+    <section>
+      <div class="sec-label mono">01 / Opening · 总</div>
+      <h2>先记住一句话：<br />「做完所有事」那一天永远不会到来——这是好消息。</h2>
+      <p class="lead">
+        伯克曼说：假使活到八十岁，大约只有<span class="hl-yellow">四千个星期</span>。现代时间管理却假装你能把无限愿望塞进有限人生：清零收件箱、优化早晨例行、把生活当成待修装置。
+        结果越高效，传送带转得越快；越忙，真正重要的事越被推远。
+      </p>
+      <p class="lead">
+        这本书不是教你每周工作四小时，而是逼你承认：<span class="hl-pink">有限性不是 bug，而是操作系统</span>。真正的时间管理，是学会更聪明地拖延——主动选择忽略什么，并把有限注意力留给当下最有必要的事。
+      </p>
+
+      <div class="toc" aria-label="九章路径">
+        <a href="#ch1"><span class="n mono">1</span><span class="t">四千周：生命短暂</span></a>
+        <a href="#ch2"><span class="n mono">2</span><span class="t">效率陷阱</span></a>
+        <a href="#ch3"><span class="n mono">3</span><span class="t">成为更好的拖延者</span></a>
+        <a href="#ch4"><span class="n mono">4</span><span class="t">西瓜难题：注意力</span></a>
+        <a href="#ch5"><span class="n mono">5</span><span class="t">因果灾难与当下</span></a>
+        <a href="#ch6"><span class="n mono">6</span><span class="t">休息不必为工作辩解</span></a>
+        <a href="#ch7"><span class="n mono">7</span><span class="t">待在公交车上</span></a>
+        <a href="#ch8"><span class="n mono">8</span><span class="t">宇宙「渺小」疗法</span></a>
+        <a href="#ch9"><span class="n mono">9</span><span class="t">五个提问 · 十个工具</span></a>
+      </div>
+    </section>
+
+    <section class="mindmap" id="mindmap" aria-label="一分钟思维导图">
+      <div class="sec-label mono">00 / 1-min Map · 先看懂全书</div>
+      <h2>一分钟看完：《四千周》在说什么</h2>
+      <p class="lead" style="margin-bottom:18px;">别记十四章细目。先抓住这条主线——</p>
+
+      <div class="map-core">常识：更高效 → 更从容？ ✕　真相：更高效 → 更忙 → 更空虚</div>
+      <div class="map-arrow mono">▼ 全书论证三步</div>
+
+      <div class="map-row">
+        <div class="map-node">
+          <h4>① 诊断</h4>
+          <p>时间像传送带。清零收件箱只会引来更多邮件；便利与效率常在质量上弄巧成拙。</p>
+        </div>
+        <div class="map-node">
+          <h4>② 转向</h4>
+          <p>核心不是做完所有事，而是明智地决定不做什么：先偿付自己、限流、抵制次优先级诱惑。</p>
+        </div>
+        <div class="map-node">
+          <h4>③ 落地</h4>
+          <p>注意力即人生；休息不必为生产力辩解；耐心待在「公交车」上；接受宇宙级渺小。</p>
+        </div>
+      </div>
+
+      <div class="map-arrow mono">▼ 所以怎么办</div>
+
+      <div class="map-row">
+        <div class="map-node">
+          <h4>选择</h4>
+          <p>创造性忽略 · 封闭式待办 · 策略性表现不佳</p>
+        </div>
+        <div class="map-node">
+          <h4>体验</h4>
+          <p>少工具化当下 · 为徒步而徒步 · 与他人时间同步</p>
+        </div>
+        <div class="map-node">
+          <h4>一句话带走</h4>
+          <p>安静地做接下来最有必要的事。</p>
+        </div>
+      </div>
+
+      <p class="map-one-liner">
+        <strong>读完记住：</strong>你无法掌控时间，也无法做完所有事——承认这一点，反而能把四千周用在真正关切的人和事上。
+      </p>
+    </section>
+
+    <section id="chapters">
+      <div class="sec-label mono">02 / Chapters · 分</div>
+      <h2>九章细读：金句、观点、可复述结论</h2>
+
+      <article class="chapter" id="ch1">
+        <div class="chapter-head">
+          <div class="ch-num mono">01</div>
+          <div>
+            <h3>四千周：生命短暂不是恐吓，是校准</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Preface · The Brief Life</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「人这一辈子太短了，短到荒唐，短到可怕，短到没礼貌……假使能活到80岁，也不过能活大约4000个星期。」</p>
+          <footer class="mono">— 前言</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「广义上的时间管理应该是我们每个人最为关切的问题。可以说，时间管理决定了人生的全部意义。不过，现代学科中所说的时间管理却狭隘得令人郁闷。」</p></blockquote>
+          <blockquote><p>「效率更高似乎只会让传送带转得更快。」</p></blockquote>
+          <blockquote><p>「让我们从一开始就承认失败吧：这种情形永远都不会发生。不过，你猜怎么着？这其实是个非常好的消息。」</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>忙碌、分心、婚育事业抉择、感觉时间加速——底层都是<span class="hl-yellow">时间有限</span>带来的摩擦。</li>
+          <li>主流生产力许诺「一切尽在掌握」：清零邮件、优化人生。作者说：那一天不会来。</li>
+          <li>承认失败不是躺平，而是停止用错误操作系统硬跑人生。</li>
+        </ul>
+        <div class="takeaway">带走：四千周不是丧，是提醒你别再为「做完所有事」加班。</div>
+      </article>
+
+      <article class="chapter" id="ch2">
+        <div class="chapter-head">
+          <div class="ch-num mono">02</div>
+          <div>
+            <h3>效率陷阱</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">The Efficiency Trap</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「你越是高效，就越是成为一个用来满足别人期待的无底线的蓄水池。」</p>
+          <footer class="mono">— 效率陷阱 / 吉姆·本森</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「当我以极高的效率回复邮件，唯一的结果就是收到更多电子邮件。」</p></blockquote>
+          <blockquote><p>「你越是拼命安排时间想做完所有事，越是发现自己将大部分时间花在了最没意义的事情上。」</p></blockquote>
+          <blockquote><p>「一旦你真正明白自己必定会错过世上几乎每一个体验，你就不会觉得仍有许多东西无法体验的事实是个问题了。」</p></blockquote>
+        </div>
+        <ul class="points">
+          <li><span class="hl-mint">数量陷阱</span>：更快处理需求 → 需求更快涌来（西西弗斯收件箱）。</li>
+          <li><span class="hl-pink">质量陷阱</span>：相信「总有一天能做完」，就不审视每件事是否值得牺牲生命片段。</li>
+          <li>对策不是更卷效率，而是忍受「应接不暇」的不适，拒绝琐事，把气力留给要紧的事。</li>
+        </ul>
+        <div class="takeaway">带走：效率本身不是敌人；把效率当成万能解药，才是陷阱。</div>
+      </article>
+
+      <article class="chapter" id="ch3">
+        <div class="chapter-head">
+          <div class="ch-num mono">03</div>
+          <div>
+            <h3>成为更好的拖延者</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Creative Neglect</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「管理我们有限时间的核心挑战不在于怎样做完所有事（那根本就不可能），而在于怎样明智地决定不做什么。」</p>
+          <footer class="mono">— 成为更好的拖延者</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「如果你不为自己省下一点时间，现在就做，每星期都做，你将来也不会有那么一天，突然发现自己能神奇地做完所有事，还有大把的空闲时间。」</p></blockquote>
+          <blockquote><p>「剩下的20件事……应该不惜一切代价极力避免去做……这些目标没有重要到形成他人生的核心，却又有足够的诱惑力，让他无法专心做最重要的那几件事。」</p></blockquote>
+          <blockquote><p>「你需要认识到你只有一次人生，要学会拒绝你确实想做的事情。」</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>罐子装石头寓言是谎言：真正的问题是<span class="hl-yellow">大石头太多</span>，装不进罐子。</li>
+          <li>三原则：① 时间上先偿付自己；② 同时进行的工作设硬上限；③ 抵制「次优先级」诱惑。</li>
+          <li>糟糕拖延常来自完美主义：怕进入有限现实。既然达不到幻想标准——不如立刻开始。</li>
+        </ul>
+        <div class="takeaway">带走：拖延不可避免；高明的人生，是选对要拖延的事。</div>
+      </article>
+
+      <article class="chapter" id="ch4">
+        <div class="chapter-head">
+          <div class="ch-num mono">04</div>
+          <div>
+            <h3>西瓜难题：注意力就是人生</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">The Watermelon Problem</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「你活在世上的体验，就是由你注意到的所有事物的总和……当你将注意力放在某个并不特别重要的事物上时，毫不夸张地说，你就是在付出你的人生。」</p>
+          <footer class="mono">— 西瓜难题</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「可以肯定，这300万人当中，没有一个人在那天早上醒来时想用自己生命中的一部分时间看一颗西瓜爆开。」</p></blockquote>
+          <blockquote><p>「工作本身可能就是分心之事，因为你投入了注意力的一部分，也就是人生的一部分，而你原本可以选择做更有意义的事。」</p></blockquote>
+          <blockquote><p>「注意力是关爱的开始。」——玛丽·奥利弗</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>BuzzFeed 西瓜直播：分心不只是「被打断」，更是<span class="hl-pink">系统性无法把时间用于自称最重视的事</span>。</li>
+          <li>注意力不是普通资源；它几乎就是人生本身。</li>
+          <li>注意力经济不只要你的时间，还要扭曲你对「什么值得注意」的判断。</li>
+        </ul>
+        <div class="takeaway">带走：时间管理若不管注意力，只是在优化被劫持的人生。</div>
+      </article>
+
+      <article class="chapter" id="ch5">
+        <div class="chapter-head">
+          <div class="ch-num mono">05</div>
+          <div>
+            <h3>因果灾难：别把此刻只当通往未来的走廊</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Instrumentalizing the Present</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「因为孩子会长大，所以我们就认为一个孩子的意义就是长大……但孩子的意义是当一个孩子。大自然对于哪怕只有一天的生命都不会鄙夷。」</p>
+          <footer class="mono">— 你在这里 / 赫尔岑</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「因果灾难」：证明某种育儿方式的对错就是看它会产生哪种成年人——童年于是丧失内在价值。</p></blockquote>
+          <blockquote><p>「由于人生有限，我们的生活中可能充斥着最后一次做的事……我们应该尽量郑重地对待每一次经历，就像它是最后一次。」</p></blockquote>
+          <blockquote><p>「试图活在当下……仍然是另一种形式的工具主义……当你过于努力让自己『更加投入当下一刻』时……会让你产生精神上的不适感。」</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>把当下只当「为未来投资」，会把爱人、孩子、散步都工具化。</li>
+          <li>「最后一次」视角：接送孩子、回老家、下海游泳——很多体验不可回放。</li>
+          <li>强行「活在当下」也可能变成新的控制欲；你本来就只活在此刻。</li>
+        </ul>
+        <div class="takeaway">带走：未来重要，但不能自动碾过「这一刻本身值不值得」。</div>
+      </article>
+
+      <article class="chapter" id="ch6">
+        <div class="chapter-head">
+          <div class="ch-num mono">06</div>
+          <div>
+            <h3>休息：不必先证明对经济有好处</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Leisure Beyond Productivity</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「我们为何需要从经济的角度来证明生活的合理性呢？这毫无道理！」</p>
+          <footer class="mono">— 重新探索休息的意义</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「我们所有人都在被逼着为了获取利润而阅读，为了获取人脉而聚会……为了重建房子而待在家过周末。」——沃特·科尔《休闲的没落》</p></blockquote>
+          <blockquote><p>「人们可以休息，不过只是为了恢复精力去工作……我们变得很难只为休息本身去休息。」</p></blockquote>
+          <blockquote><p>「为徒步而徒步」——允许无用、无产出、不为「变成更好的人」而辩护的时间。</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>现代人即使多了闲暇，也常把休息做成第二份工作：训练、冥想、旅行打卡。</li>
+          <li>我们不只是过度劳动的受害者，也常<span class="hl-mint">厌恶闲散</span>——停不下来。</li>
+          <li>真正的休息需要学会：不为生产力辩护。</li>
+        </ul>
+        <div class="takeaway">带走：若休息必须「对工作有用」才合法，休息已经死了。</div>
+      </article>
+
+      <article class="chapter" id="ch7">
+        <div class="chapter-head">
+          <div class="ch-num mono">07</div>
+          <div>
+            <h3>待在公交车上：耐心与同步</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Patience · Networked Time</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「很简单。待在公交车上。老老实实地待在公交车上。」</p>
+          <footer class="mono">— 阿诺·明基宁 · 赫尔辛基公交寓言</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>耐心三原则：① 让自己喜欢上问题；② 接受激进的渐进主义（到点就停）；③ 原创往往在模仿的前方。</p></blockquote>
+          <blockquote><p>「时间也是一种『关系网商品』……必须与他人的时间同步。」</p></blockquote>
+          <blockquote><p>「数字游民」常误以为时间越多越好；若无法与他人协调，充裕的时间也会变得孤独而无意义。</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>急躁螺旋：越想立刻掌控结果，越难让现实按自己节奏展开。</li>
+          <li>创作、婚姻、扎根一地——都要求先走一段「看起来不独特」的公共路线。</li>
+          <li>弹性工作、远程、游牧自由很诱人，但<span class="hl-yellow">时间主权</span>常以失去同步为代价。</li>
+        </ul>
+        <div class="takeaway">带走：耐心不是慢；同步不是牺牲自由，而是让时间变得值得。</div>
+      </article>
+
+      <article class="chapter" id="ch8">
+        <div class="chapter-head">
+          <div class="ch-num mono">08</div>
+          <div>
+            <h3>宇宙「渺小」疗法</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Cosmic Insignificance Therapy</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「《宇宙对你不屑一顾》。按照宇宙的时间尺度来看，自己实在过于微不足道——想到这一点，人们就会感觉自己放下了重担。」</p>
+          <footer class="mono">— 宇宙「渺小」疗法</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心</span>
+          <blockquote><p>「我们几乎可以肯定，你无法给宇宙留下任何印迹……从真正的宇宙视野来看，苹果手机很快也会被人遗忘，就像其他的一切一样。」</p></blockquote>
+          <blockquote><p>「为孩子准备营养丰富的饭菜可能也很重要……如果你的小说能让同时代的少数读者感动或快乐，那么这样的创作就是值得的。」</p></blockquote>
+          <blockquote><p>「我们需要根据自身的实际条件度过这几千个星期……那些具体且有限的人生体验，其实已经足够令人惊叹。」</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>过高的「宇宙级意义」标准，会让普通人的生活永远不够格。</li>
+          <li>渺小不是虚无：它降低不可能的标准，释放<span class="hl-mint">适度有意义</span>的生活。</li>
+          <li>目标从「在宇宙留印迹」换成「在有限条件下让身边的人更亮一点」。</li>
+        </ul>
+        <div class="takeaway">带走：你不需要伟大到宇宙记得你；你需要诚实到自己过得下去。</div>
+      </article>
+
+      <article class="chapter" id="ch9">
+        <div class="chapter-head">
+          <div class="ch-num mono">09</div>
+          <div>
+            <h3>五个提问 · 接下来最有必要的事</h3>
+            <p class="mono" style="color:var(--muted);margin:0;font-size:13px;">Five Questions · Ten Tools</p>
+          </div>
+        </div>
+        <blockquote class="quote">
+          <p>「安静地做接下来最有必要的事……只要你还不知道它是什么，就还是会将大把的钱花在无用的投机上。」</p>
+          <footer class="mono">— 荣格致 V 夫人 / 结语</footer>
+        </blockquote>
+        <div class="orig-quotes">
+          <span class="label mono">原文核心 · 五个提问</span>
+          <blockquote><p>① 哪些地方你在追求舒适，实际却需要一点点不适？</p></blockquote>
+          <blockquote><p>② 你是否在用无法达到的标准要求自己？</p></blockquote>
+          <blockquote><p>③ 哪些方面你还没接受：你就是你本来的样子？</p></blockquote>
+          <blockquote><p>④ 哪些地方你非要十成把握才敢动手？</p></blockquote>
+          <blockquote><p>⑤ 若不那么在乎结果，你会怎样生活？</p></blockquote>
+        </div>
+        <ul class="points">
+          <li>附录实用件：开放/封闭待办清单、一次一件大事、策略性表现不佳、「已办清单」、设备变枯燥、定时关注新闻等。</li>
+          <li>衡量「充分利用时间」的标准，不是完成量，而是：在历史此刻、在你有限才能下，你是否让他人人生更光明。</li>
+          <li>后记收束：生命短得没礼貌——但这是解脱，不是绝望。</li>
+        </ul>
+        <div class="takeaway">带走：别等掌控感降临；做接下来最有必要的那一件。</div>
+      </article>
+    </section>
+
+    <section class="reflection" id="total-close">
+      <div class="sec-label mono">03 / Closing · 总 · Since 2026</div>
+      <h2>合上书之后：传送带没有停，只是换成了 AI 加速</h2>
+
+      <p>
+        伯克曼写的是收件箱清零、效率 App、便利服务。到了 2026，新的传送带叫：无限生成、无限待办、无限「还能再优化一点」。
+        AI 帮你更快回邮件、更快写稿、更快列计划——于是需求、期待与自我要求也同步加速。
+        <span class="hl-yellow">形式变了，陷阱很熟</span>：更快完成 → 更快被填满 → 重要的事继续排到「等我搞定这一切之后」。
+      </p>
+
+      <div class="close-grid">
+        <div class="close-card">
+          <h4>01 · 生产力负债升级</h4>
+          <p>每天醒来像欠系统一笔债：未读、未回复、未学习、未健身、未输出。工具越强，负债感越重——因为「本可以做更多」变得更刺眼。</p>
+        </div>
+        <div class="close-card">
+          <h4>02 · 休息仍要出示许可证</h4>
+          <p>休息仍常被包装成复盘、充电、内容素材。刷短视频叫放松，发呆却像犯罪。为徒步而徒步，依然反主流。</p>
+        </div>
+        <div class="close-card">
+          <h4>03 · 注意力被精细开采</h4>
+          <p>西瓜直播换成了无限信息流与 AI 个性化投喂。分心不只偷走一小时，还重写「什么值得注意」。</p>
+        </div>
+        <div class="close-card">
+          <h4>04 · 异步自由的孤独</h4>
+          <p>远程、弹性、数字游牧更普遍；时间主权增加时，与朋友、爱人、同事同步的成本也更高。自由若无法共享，会变薄。</p>
+        </div>
+      </div>
+
+      <blockquote class="quote">
+        <p>我的分享想落在这里：不要再把「把自己优化到没有短板」当成道德完成。真正难的是——在还能生成一百个待办的时代，仍敢划一条边界，拒绝二十件「其实也不错」的事；并在某个普通下午，做一件对你而言最有必要、却不会上热搜的小事。</p>
+        <footer class="mono">personal note · 2026</footer>
+      </blockquote>
+
+      <p>
+        若伯克曼的有限性提醒还有用，它对 2026 的提醒是：
+        <span class="hl-mint">先承认做不完</span>、
+        <span class="hl-pink">再练习创造性忽略</span>、
+        <span class="hl-yellow">最后才谈工具与加速</span>。
+        工具可以帮你跑得更快；方向若错，只是更快地错过人生。
+      </p>
+
+      <p style="margin-bottom:0;">
+        今天这场分享，若只能带走三句：<br />
+        1）四千周很短，所以「做完所有事」是幻觉；<br />
+        2）效率陷阱的解药不是更卷，而是明智地忽略；<br />
+        3）安静地做接下来最有必要的事——往往已经足够。
+      </p>
+    </section>
+
+    <footer class="footer mono">
+      <div>Four Thousand Weeks · Oliver Burkeman · 戴胜蓝 译</div>
+      <div style="margin-top:8px;">
+        在线：<a href="https://zharuhang-blip.github.io/four-thousand-weeks-share/" style="color:inherit;">zharuhang-blip.github.io/four-thousand-weeks-share</a>
+        · 源码：<a href="https://github.com/zharuhang-blip/four-thousand-weeks-share" style="color:inherit;">github.com/zharuhang-blip/four-thousand-weeks-share</a>
+      </div>
+      <div style="margin-top:8px;opacity:0.85;">本页为读书分享笔记（开源）。全书请通过正版渠道阅读；仓库不收录版权图书 PDF。</div>
+    </footer>
+  </div>
+</body>
+</html>
